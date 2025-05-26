@@ -1,5 +1,10 @@
 package phbmediaplayer;
 
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
+ */
+
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -9,12 +14,12 @@ import java.util.ResourceBundle;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.DialogEvent;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -26,10 +31,16 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
-import javafx.stage.StageStyle;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
 
+
+/**
+ * FXML Controller class
+ *
+ * @author LENOVO
+ */
 public class FXMLDocumentController implements Initializable {
 
     private MediaPlayer mediaPlayer;
@@ -41,19 +52,20 @@ public class FXMLDocumentController implements Initializable {
     private StackPane sPane;
 
     @FXML
-    private Button playPause;
+    private Button pausePlay;
+
+    @FXML
+    private Slider seek;
 
     @FXML
     private Slider volume;
-
-    @FXML Slider seek;
 
     @FXML
     BorderPane bPane;
 
     List<String> playlist = new ArrayList<>();
     List<String> sourceName = new ArrayList<>();
-    static int INDEX, PLAY = 0;
+    static int INDEX_PLAY = 0;
 
     @FXML
     private void openFiles(ActionEvent event) {
@@ -62,18 +74,19 @@ public class FXMLDocumentController implements Initializable {
             "Media File", "*.mp4", "*.mp3");
         fc.getExtensionFilters().add(filter);
         List<File> f = fc.showOpenMultipleDialog(null);
-        if (!f.isEmpty()) {
+        if (f != null && !f.isEmpty()) {
             if (!playlist.isEmpty()) {
                 playlist.clear();
                 sourceName.clear();
             }
+
             for (int i = 0; i < f.size(); i++) {
                 playlist.add(f.get(i).toURI().toString());
                 sourceName.add(f.get(i).getName());
             }
 
-            INDEX= 0;
-            playMedia(INDEX);
+            INDEX_PLAY = 0;
+            playMedia(INDEX_PLAY);
         }
     }
 
@@ -112,8 +125,8 @@ public class FXMLDocumentController implements Initializable {
         });
 
         mediaPlayer.play();
-        Image imagePause = new Image(getClass().getResourceAsStream("/images/0.png"));
-        playPause.setGraphic(new ImageView(imagePause));
+//        Image imagePause = new Image(getClass().getResourceAsStream("/images/pause.png"));
+//        pausePlay.setGraphic(new ImageView(imagePause));
     }
 
     @FXML
@@ -123,53 +136,48 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     private void backward(ActionEvent event) {
-        if (INDEX  > 0) {
-            INDEX--;
-            playMedia(INDEX);
+        if (INDEX_PLAY > 0) {
+            INDEX_PLAY--;
+            playMedia(INDEX_PLAY);
         }
     }
 
     @FXML
     private void stop(ActionEvent event) {
         mediaPlayer.stop();
-        Image imagePlay = new Image(getClass().getResourceAsStream("/images/5.png"));
-        playPause.setGraphic(new ImageView(imagePlay));
-        INDEX = 0;
+//        Image imagePlay = new Image(getClass().getResourceAsStream("/images/pause.png"));
+//        pausePlay.setGraphic(new ImageView(imagePlay));
+        INDEX_PLAY = 0;
     }
 
     @FXML
     private void pausePlay(ActionEvent event) {
-        if (!playlist.isEmpty()) {
-            if(PLAY == 1) {
-                mediaPlayer.pause();
-                Image imagePLay = new Image(getclass().getResourceAsStream("/images/5.png"));
-                playPause.setGraphic(new ImageView(imagePLay));
-                PLAY = 0;
-            }else{
-                mediaPlayer.pause();
-                Image imagePlay = new Image(getClass().getResourceAsStream("/image/00.png"));
-                String imagePause = null;
-                playPause.setGraphic(new ImageView(imagePause));
-                PLAY = 1;
-            }
-        }else{
+        if (playlist.isEmpty()) {
             Dialog<Pair<String, String>> dialog = new Dialog<>();
-            dialog.setTitle("message");
-            dialog.setContentText("Please Open Media!!!");
-            dialog.setOnCloseRequest((DialogEvent event1) -> {
-                dialog.close();
-            });
-            dialog.initStyle(StageStyle.DECORATED);
-            dialog.initModality(Modality.NONE);
+            dialog.setTitle("INFO");
+            dialog.setContentText("Playlist kosong. Silakan buka file terlebih dahulu.");
+            dialog.getDialogPane().getButtonTypes().addAll(javafx.scene.control.ButtonType.CLOSE);
+            dialog.initModality(Modality.WINDOW_MODAL);
             dialog.show();
+            return;
+        }
+
+        if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+            mediaPlayer.pause();
+//            Image imagePause = new Image(getClass().getResourceAsStream("/images/pause.png"));
+//            pausePlay.setGraphic(new ImageView(imagePause));
+        } else {
+            mediaPlayer.play();
+//            Image imagePlay = new Image(getClass().getResourceAsStream("/images/pause.png"));
+//            pausePlay.setGraphic(new ImageView(imagePlay));
         }
     }
 
     @FXML
     private void forward(ActionEvent event) {
-        if (INDEX >= 0&& INDEX < playlist.size()) {
-            INDEX++;
-            playMedia(INDEX);
+        if (INDEX_PLAY < playlist.size() - 1) {
+            INDEX_PLAY++;
+            playMedia(INDEX_PLAY);
         }
     }
 
@@ -181,9 +189,5 @@ public class FXMLDocumentController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Initialization code if needed
-}
-
-    private Object getclass() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

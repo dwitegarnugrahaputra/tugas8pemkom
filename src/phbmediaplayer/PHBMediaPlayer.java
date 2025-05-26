@@ -1,3 +1,7 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
+ */
 package phbmediaplayer;
 
 import javafx.application.Application;
@@ -8,24 +12,28 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 
-
-
-
+/**
+ *
+ * @author LENOVO
+ */
 public class PHBMediaPlayer extends Application {
     @Override
-    public void start(Stage stage)throws Exception{
+    public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("PHB Media Player");
+
         scene.setOnMouseClicked((MouseEvent event) -> {
-            if(event.getClickCount() == 2){
+            if(event.getClickCount() == 2) {
                 stage.setFullScreen(true);
             }
         });
+
         stage.show();
     }
+
     public static void main(String[] args) {
         launch(args);
-    }
+}
 }
